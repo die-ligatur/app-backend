@@ -13,9 +13,10 @@ yarn-error.log*
 .env.production.local
 .env.local
 
-# IDEs
+# IDEs and OS Files
 .vscode
 .idea
+.DS_Store
 
 # Dependency directories
 node_modules/

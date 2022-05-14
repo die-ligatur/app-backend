@@ -6,41 +6,42 @@ import {
   updateUser,
 } from "../services/user.service";
 
-interface User {
-  id: number;
-  firstname: string;
-  lastname: string;
-  email: string;
+interface GetUserRoute {
+  Params: {
+    id: string;
+  };
 }
 
-interface GetUserRouteOptions {
-  Body: User;
+interface CreateUserRoute {
+  Body: any;
 }
-interface CreateUserRouteOptions {
-  Body: User;
-}
-interface UpdateUserRouteOptions {
+interface UpdateUserRoute {
   Body: { id: number; data: any };
 }
-interface DeleteUserRouteOptions {
+interface DeleteUserRoute {
   Body: { id: number };
 }
 
 async function routes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   // Get a user
-  fastify.get<GetUserRouteOptions>("/", async (request, response) => {
-    await getUser(request.body);
-    response.send("Get User");
+  fastify.get<GetUserRoute>("/:id", async (request, response) => {
+    try {
+      const user = await getUser(parseInt(request.params.id));
+      if (!user) response.status(404).send("User not found");
+      response.send(user);
+    } catch (err) {
+      response.status(500).send("An Error Occured");
+    }
   });
 
-  // create a user
-  fastify.post<CreateUserRouteOptions>("/", async (request, response) => {
+  // todo create a user
+  fastify.post<CreateUserRoute>("/", async (request, response) => {
     await createUser(request.body);
     response.send("Create User");
   });
 
-  // update a user
-  fastify.put<UpdateUserRouteOptions>("/", async (request, response) => {
+  // todo update a user
+  fastify.put<UpdateUserRoute>("/", async (request, response) => {
     const updatedUser = await updateUser(
       { id: request.body.id },
       request.body.data
@@ -48,8 +49,8 @@ async function routes(fastify: FastifyInstance, options: FastifyPluginOptions) {
     response.send(updatedUser);
   });
 
-  // delete a user
-  fastify.delete<DeleteUserRouteOptions>("/", async (request, response) => {
+  // todo delete a user
+  fastify.delete<DeleteUserRoute>("/", async (request, response) => {
     await deleteUser({ id: request.body.id });
     response.send(`Deleted User with id ${request.body.id}`);
   });
